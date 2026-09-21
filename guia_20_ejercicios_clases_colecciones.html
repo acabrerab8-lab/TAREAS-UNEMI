@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20 Ejercicios — Clases y Colecciones con Métodos Reutilizables</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1A73E8;--blue-light:#E8F0FE;--blue-dark:#1558B0;
+  --green:#34A853;--green-light:#E6F4EA;--green-dark:#1B6B35;
+  --amber:#F9AB00;--amber-light:#FEF7E0;--amber-dark:#7A4F00;
+  --red:#EA4335;--red-light:#FCE8E6;--red-dark:#B3261E;
+  --purple:#7B3FE4;--purple-light:#F3E8FD;--purple-dark:#5A2AAB;
+  --teal:#00897B;--teal-light:#E0F2F1;--teal-dark:#004D40;
+  --text:#202124;--text2:#5F6368;--text3:#80868B;
+  --bg:#F8F9FA;--white:#FFF;--border:#DADCE0;
+  --code-bg:#1e1e1e;--code-text:#d4d4d4;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',system-ui,sans-serif;font-size:16px;color:var(--text);background:var(--bg);line-height:1.65;}
+code,pre{font-family:'Fira Code','Courier New',monospace;}
+
+.wrap{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+
+/* Header portada */
+.portada{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;padding:3rem 0 2.5rem;margin-bottom:2.5rem;}
+.portada h1{font-size:34px;font-weight:700;margin-bottom:.5rem;line-height:1.15;}
+.portada .subtitulo{font-size:17px;opacity:.9;margin-bottom:1.5rem;line-height:1.6;}
+.portada .stats{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1.25rem;}
+.portada .stat{background:rgba(255,255,255,.15);border-radius:8px;padding:.6rem 1rem;font-size:14px;}
+.portada .stat strong{font-size:20px;display:block;font-weight:700;}
+
+/* Boxes */
+.box{border-radius:10px;padding:1.1rem 1.35rem;margin:1.2rem 0;}
+.box-blue{background:var(--blue-light);border-left:4px solid var(--blue);}
+.box-green{background:var(--green-light);border-left:4px solid var(--green);}
+.box-amber{background:var(--amber-light);border-left:4px solid var(--amber);}
+.box-purple{background:var(--purple-light);border-left:4px solid var(--purple);}
+.box-red{background:var(--red-light);border-left:4px solid var(--red);}
+.box-title{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;}
+.box-blue .box-title{color:var(--blue);}
+.box-green .box-title{color:var(--green-dark);}
+.box-amber .box-title{color:var(--amber-dark);}
+.box-purple .box-title{color:var(--purple-dark);}
+.box-red .box-title{color:var(--red-dark);}
+.box p{margin-bottom:.55rem;}
+.box p:last-child{margin-bottom:0;}
+.box code{background:rgba(255,255,255,.7);padding:1px 5px;border-radius:4px;font-size:12.5px;}
+
+.obj-list{list-style:none;display:flex;flex-direction:column;gap:.4rem;margin-top:.35rem;}
+.obj-list li{display:flex;align-items:flex-start;gap:.55rem;font-size:14.5px;line-height:1.55;}
+.obj-list li::before{content:"✓";color:var(--green);font-weight:700;flex-shrink:0;}
+
+/* Bloque grande */
+.bloque-header{background:var(--white);border-radius:14px;padding:1.75rem 1.85rem;margin:3rem 0 1.5rem;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.03);}
+.bloque-tag{display:inline-block;padding:5px 15px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;}
+.bloque-tag{background:var(--purple-light);color:var(--purple-dark);}
+.bloque-header h2{font-size:26px;font-weight:700;margin-bottom:.5rem;line-height:1.2;}
+.bloque-sub{font-size:15px;color:var(--text2);line-height:1.75;}
+
+.divider-secc{display:flex;align-items:center;gap:1rem;margin:2rem 0 1rem;}
+.divider-secc::before,.divider-secc::after{content:"";flex:1;border-top:1px solid var(--border);}
+.divider-secc span{font-size:13px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;}
+
+/* Ejercicio MODELO (desarrollado) */
+.ejercicio-modelo{background:var(--white);border:2px solid var(--purple);border-radius:14px;margin:1.5rem 0 2.5rem;overflow:hidden;box-shadow:0 3px 10px rgba(123,63,228,.08);}
+.modelo-head{background:linear-gradient(135deg, var(--purple), var(--blue));color:#fff;padding:1.15rem 1.35rem;}
+.modelo-badge{display:inline-block;background:rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.05em;margin-bottom:.4rem;}
+.modelo-titulo{font-size:20px;font-weight:700;line-height:1.25;}
+.modelo-body{padding:1.5rem 1.5rem 1.85rem;}
+.ej-enunciado{background:var(--bg);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.35rem;font-size:14.5px;line-height:1.75;}
+
+/* Paso */
+.paso{margin:1.15rem 0;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--white);}
+.paso-head{display:flex;align-items:center;gap:.7rem;padding:.75rem 1.05rem;background:var(--bg);border-bottom:1px solid var(--border);}
+.paso-num{width:30px;height:30px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
+.paso-tit{font-weight:600;font-size:15px;}
+.paso-body{padding:1.05rem 1.25rem;}
+.paso-guia{font-size:13.5px;color:var(--text2);margin-bottom:.75rem;font-style:italic;}
+
+/* E-P-S */
+.eps{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin:.65rem 0;}
+.eps-mini{grid-template-columns:repeat(3,1fr);}
+.eps-box{border-radius:8px;padding:.7rem .85rem;font-size:13.5px;line-height:1.6;}
+.eps-e{background:var(--blue-light);}
+.eps-p{background:var(--amber-light);}
+.eps-s{background:var(--green-light);}
+.eps-lbl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;}
+.eps-e .eps-lbl{color:var(--blue);}
+.eps-p .eps-lbl{color:var(--amber-dark);}
+.eps-s .eps-lbl{color:var(--green-dark);}
+.eps-val{line-height:1.5;}
+
+/* IO */
+.io-example{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:.75rem 0;}
+.io-box{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.75rem .9rem;font-size:13px;}
+.io-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;}
+.io-val{font-family:'Fira Code',monospace;color:var(--text);line-height:1.7;}
+
+/* Bosquejo */
+.bosquejo{background:#FFFDF5;border:1px dashed #E0C97F;border-radius:8px;padding:.9rem 1.1rem;margin:.5rem 0;}
+.bosq-lbl{font-size:11px;font-weight:700;color:#8B6914;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;}
+.bosquejo pre{font-family:'Fira Code',monospace;font-size:13px;line-height:1.85;white-space:pre-wrap;color:#4A3B00;}
+
+/* Descubrimiento */
+.descubrimiento{background:var(--purple-light);border-radius:8px;padding:.9rem 1.1rem;font-size:14px;margin:.5rem 0;}
+.desc-lbl{font-size:11px;font-weight:700;color:var(--purple-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;}
+.descubrimiento p{margin-bottom:.55rem;line-height:1.7;}
+.descubrimiento p:last-child{margin-bottom:0;}
+.descubrimiento code{background:rgba(255,255,255,.75);padding:1px 6px;border-radius:4px;font-family:'Fira Code',monospace;font-size:12.5px;color:var(--purple-dark);}
+
+/* Código */
+.code-wrap{position:relative;margin:.85rem 0;}
+.code-header{background:#2d2d2d;border-radius:8px 8px 0 0;padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center;}
+.code-lang{font-size:12px;color:#aaa;font-family:'Fira Code',monospace;font-weight:500;}
+.btn-copy{font-size:12px;padding:4px 12px;border-radius:5px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;background:#3c3c3c;color:#ccc;transition:background .15s;}
+.btn-copy:hover{background:#555;}
+.btn-copy.copied{background:var(--green);color:#fff;}
+pre.code-body{background:var(--code-bg);color:var(--code-text);padding:1.05rem 1.2rem;border-radius:0 0 8px 8px;overflow-x:auto;font-size:13.5px;line-height:1.75;white-space:pre;tab-size:4;}
+.cm{color:#6a9955;}
+.ck{color:#569cd6;}
+.cs{color:#ce9178;}
+.cn{color:#b5cea8;}
+.cf{color:#dcdcaa;}
+.ct{color:#4ec9b0;}
+.cp{color:#c586c0;}
+.ci{color:#9cdcfe;}
+
+/* Líneas explicadas */
+.lineas{margin-top:.85rem;}
+.lin-lbl{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;}
+.lin{display:grid;grid-template-columns:300px 1fr;gap:.85rem;padding:.55rem 0;border-top:1px solid var(--border);font-size:13.5px;line-height:1.65;}
+.lin:first-of-type{border-top:none;}
+.lin-k{font-family:'Fira Code',monospace;font-size:12px;color:var(--blue);font-weight:600;word-break:break-all;}
+.lin-v{color:var(--text2);}
+.lin-v code{background:var(--blue-light);color:var(--blue-dark);padding:1px 5px;border-radius:4px;font-size:12px;}
+
+/* Prueba de escritorio */
+.mesa-wrap{overflow-x:auto;margin:.5rem 0;}
+table.mesa{border-collapse:collapse;width:100%;font-size:12.5px;font-family:'Fira Code',monospace;}
+table.mesa th{background:var(--purple);color:#fff;padding:.55rem .7rem;text-align:center;font-weight:600;font-size:11px;text-transform:uppercase;}
+table.mesa td{border:1px solid var(--border);padding:.5rem .65rem;text-align:center;}
+table.mesa tr:nth-child(even){background:var(--bg);}
+
+/* Errores */
+.errores{background:var(--red-light);border-radius:8px;padding:.9rem 1.1rem;margin-top:1.15rem;}
+.err-lbl{font-size:12px;font-weight:700;color:var(--red-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;}
+.errores ul{margin:0;padding-left:1.2rem;font-size:13.5px;line-height:1.75;}
+.errores li{margin-bottom:.4rem;}
+.errores code{background:rgba(255,255,255,.75);padding:1px 5px;border-radius:4px;font-family:'Fira Code',monospace;font-size:12.5px;color:var(--red-dark);}
+
+/* Reto */
+.reto-box{background:var(--green-light);border-radius:8px;padding:.95rem 1.15rem;margin-top:1rem;font-size:14px;line-height:1.7;}
+.reto-lbl{font-size:12px;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;}
+
+/* Ejercicio propuesto */
+.ejercicio-propuesto{background:var(--white);border:1px solid var(--border);border-radius:11px;margin:1.15rem 0;overflow:hidden;transition:transform .12s, box-shadow .12s;}
+.ejercicio-propuesto:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.04);}
+.prop-head{display:flex;align-items:center;gap:.75rem;padding:.95rem 1.2rem;background:var(--bg);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.prop-num{font-family:'Fira Code',monospace;font-weight:700;color:var(--purple);font-size:13px;}
+.prop-badge{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+.badge-basico{background:var(--green-light);color:var(--green-dark);}
+.badge-medio{background:var(--amber-light);color:var(--amber-dark);}
+.badge-avanzado{background:var(--purple-light);color:var(--purple-dark);}
+.prop-titulo{flex:1;font-weight:600;font-size:15.5px;color:var(--text);min-width:250px;}
+.prop-body{padding:1.15rem 1.25rem;}
+.prop-enunciado{font-size:14.5px;line-height:1.8;margin-bottom:1rem;}
+.prop-enunciado code{background:var(--blue-light);color:var(--blue-dark);padding:1px 6px;border-radius:4px;font-size:12.5px;}
+
+.tip{background:var(--amber-light);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:.75rem 1rem;font-size:13.5px;margin-top:.85rem;line-height:1.65;}
+.tip strong{color:var(--amber-dark);}
+.tip code{background:rgba(255,255,255,.75);padding:1px 5px;border-radius:4px;font-size:12.5px;}
+
+/* Aviso alumno */
+.aviso-alumno{background:linear-gradient(135deg, var(--amber-light), #FFF9E6);border:2px dashed var(--amber);border-radius:12px;padding:1.15rem 1.35rem;margin:1.5rem 0;font-size:14.5px;line-height:1.75;}
+.aviso-alumno strong{color:var(--amber-dark);}
+
+/* Footer */
+.footer{background:var(--white);border-top:1px solid var(--border);padding:2rem 0;margin-top:4rem;text-align:center;color:var(--text2);font-size:14px;}
+
+h2{font-size:22px;font-weight:600;margin:1.5rem 0 .75rem;color:var(--text);}
+h3{font-size:17px;font-weight:600;margin:1.25rem 0 .5rem;}
+
+@media(max-width:720px){
+  .portada h1{font-size:26px;}
+  .eps, .io-example{grid-template-columns:1fr;}
+  .lin{grid-template-columns:1fr;gap:.25rem;}
+  .prop-titulo{width:100%;}
+  .bloque-header h2{font-size:21px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== PORTADA ==================== -->
+<div class="portada">
+  <div class="wrap">
+    <h1>🧬 20 Ejercicios — Clases y Colecciones</h1>
+    <div class="subtitulo">Métodos reutilizables con listas, tuplas, diccionarios y conjuntos dentro de clases. Desde Unidad 1 hasta Unidad 2 (sin herencia).</div>
+    <div class="stats">
+      <div class="stat"><strong>1</strong>ejercicio modelo</div>
+      <div class="stat"><strong>20</strong>ejercicios propuestos</div>
+      <div class="stat"><strong>Todas las colecciones</strong>aplicadas</div>
+      <div class="stat"><strong>Métodos reutilizables</strong>con *args/**kwargs</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ==================== INTRODUCCIÓN ==================== -->
+  <div class="box box-blue">
+    <div class="box-title">🎯 Cómo funciona esta guía</div>
+    <p>Cada ejercicio combina <strong>una clase</strong> (con constructor, atributos y métodos) con <strong>colecciones</strong> (listas, tuplas, diccionarios, conjuntos) para resolver un problema real.</p>
+    <p style="margin-top:.4rem"><strong>La estructura es siempre:</strong></p>
+    <ul class="obj-list">
+      <li><code>__init__</code>: constructor que inicializa atributos (muchas veces colecciones vacías)</li>
+      <li><strong>Método 1:</strong> resuelve una tarea concreta (recibe datos, procesa, retorna un resultado)</li>
+      <li><strong>Método 2+:</strong> reutiliza el método 1 con <code>*args</code> o <code>**kwargs</code> para procesar lotes</li>
+    </ul>
+  </div>
+
+  <div class="box box-purple">
+    <div class="box-title">🧱 Estructura de cada ejercicio</div>
+    <p><strong>Paso 1 (Entender):</strong> Identifica la Entrada, Proceso y Salida.</p>
+    <p><strong>Paso 2 (Bosquejo):</strong> Resuelve a mano con datos concretos.</p>
+    <p><strong>Paso 3 (Patrón):</strong> Descubre qué se repite y qué cambia.</p>
+    <p><strong>Paso 4 (Código):</strong> Escribe la clase y sus métodos.</p>
+    <p><strong>Paso 5 (Verificación):</strong> Prueba con una tabla (trace execution).</p>
+  </div>
+
+  <!-- ==================== BLOQUE PRINCIPAL ==================== -->
+  <div class="bloque-header">
+    <div class="bloque-tag">Modelo + 20 ejercicios</div>
+    <h2>Clases con métodos que usan colecciones</h2>
+    <div class="bloque-sub">Todos los ejercicios aplican <strong>funciones dentro de clases</strong>, trabajan con <strong>listas, tuplas, diccionarios, conjuntos</strong>, reutilizan métodos con <code>*args</code>, y resuelven problemas de Unidad 1-2: variables, operadores, control de flujo, funciones y estructuras de datos (sin herencia).</div>
+  </div>
+
+  <div class="divider-secc"><span>📘 Ejercicio Modelo Resuelto</span></div>
+
+  <!-- ==================== EJERCICIO MODELO ==================== -->
+  <div class="ejercicio-modelo">
+    <div class="modelo-head">
+      <div class="modelo-badge">📘 EJERCICIO MODELO — resuelto paso a paso</div>
+      <div class="modelo-titulo">Ejercicio 0 — Números primos: validar y listar</div>
+    </div>
+    <div class="modelo-body">
+      <div class="ej-enunciado"><strong>📋 Enunciado.</strong> Crear una clase <code>NumeroPrimo</code> que:
+      <ul style="margin-top:.5rem; margin-left:1.5rem; line-height:1.8;">
+        <li>Tenga un método <code>es_primo(numero)</code> que retorne <code>True</code> o <code>False</code>.</li>
+        <li>Tenga un método <code>primos_en_rango(*args)</code> que reciba múltiples números y retorne una <strong>lista</strong> con los que son primos, reutilizando <code>es_primo()</code>.</li>
+        <li>Tenga un atributo <code>historial</code> (una lista) que guarde todos los números probados.</li>
+        <li>Tenga un método <code>cantidad_verificados()</code> que retorne cuántos números se han probado.</li>
+      </ul></div>
+
+      <div class="paso">
+        <div class="paso-head"><span class="paso-num">1</span><span class="paso-tit">Entender el problema (E · P · S)</span></div>
+        <div class="paso-body">
+          <p class="paso-guia">Separo el problema en Entrada, Proceso y Salida.</p>
+          <div class="eps">
+            <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">uno o varios números; la clase los recibe en métodos</div></div>
+            <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">comprobar si es primo (divisible solo por 1 y por sí mismo); guardar en historial</div></div>
+            <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">True/False; lista de primos; cantidad de verificaciones</div></div>
+          </div>
+          <div class="io-example">
+            <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">np = NumeroPrimo()<br>np.es_primo(7)<br>np.primos_en_rango(10,11,12,13)</div></div>
+            <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">True<br>[11, 13]<br>Historial: [7,10,11,12,13]</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="paso">
+        <div class="paso-head"><span class="paso-num">2</span><span class="paso-tit">Bosquejo a mano</span></div>
+        <div class="paso-body">
+          <p class="paso-guia">Resuelvo a mano cómo determinar si un número es primo y cómo guardar el historial.</p>
+          <div class="bosquejo"><div class="bosq-lbl">✍️ En el cuaderno</div><pre>¿Es 7 primo?
+  ¿Es divisible por 2? No
+  ¿Es divisible por 3? No
+  ¿Es divisible por 4? No
+  ¿Es divisible por 5? No
+  ¿Es divisible por 6? No
+  Paré en 6 porque 7/2 ≈ 3.5
+  Resultado: SÍ, es primo ✓
+
+¿Es 12 primo?
+  ¿Es divisible por 2? Sí → NO es primo ✗
+
+¿Es 13 primo?
+  ¿Es divisible por 2? No
+  ¿Es divisible por 3? No
+  ¿Es divisible por 4? No
+  ¿Es divisible por 5? No
+  ¿Es divisible por 6? No
+  Resultado: SÍ, es primo ✓
+
+Historial después de es_primo(7):
+  [7]
+
+Historial después de primos_en_rango(10,11,12,13):
+  [7, 10, 11, 12, 13]
+
+Primos encontrados en el rango:
+  [11, 13]</pre></div>
+        </div>
+      </div>
+
+      <div class="paso">
+        <div class="paso-head"><span class="paso-num">3</span><span class="paso-tit">Descubrir el patrón</span></div>
+        <div class="paso-body">
+          <div class="descubrimiento"><div class="desc-lbl">💡 Aquí me doy cuenta de que…</div>
+            <p><strong>1) Método es_primo(numero):</strong> Es un <strong>validador</strong> que usa un bucle <code>for</code> (control de flujo de Unidad 1). Prueba divisores desde 2 hasta √número. Si alguno divide exactamente (módulo == 0), retorna <code>False</code>. Si termina el bucle sin encontrar divisor, retorna <code>True</code>.</p>
+            <p><strong>2) Método primos_en_rango(*args):</strong> Recibe múltiples números en <code>*args</code>. Recorre todos con un bucle, llama a <code>es_primo()</code> para cada uno, y si es primo lo añade a una <strong>lista</strong>. Esta es la <strong>reutilización</strong>.</p>
+            <p><strong>3) Atributo historial:</strong> Es una <strong>lista</strong> que crece cada vez que se verifica un número. Se inicializa vacía en <code>__init__</code> y se actualiza en cada método que ejecuta una verificación.</p>
+            <p><strong>4) Constructor __init__:</strong> Solo inicializa el historial. No recibe parámetros complejos, solo prepara el estado inicial.</p>
+            <p><strong>Conceptos aplicados:</strong> operadores aritméticos (<code>%</code>), control de flujo (<code>for</code>, <code>if</code>), funciones dentro de clases, colecciones (<strong>listas</strong>, <strong>tuplas</strong> via *args), reutilización de métodos.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="paso">
+        <div class="paso-head"><span class="paso-num">4</span><span class="paso-tit">Escribir el código (clase y métodos)</span></div>
+        <div class="paso-body">
+          <div class="code-wrap"><div class="code-header"><span class="code-lang">Python — solución completa</span>
+          <button class="btn-copy" onclick="copyCode(this)">Copiar</button></div>
+          <pre class="code-body"><span class="cp">class</span> <span class="ct">NumeroPrimo</span>:
+    <span class="cs">"""Clase para validar números primos y guardar historial de búsquedas."""</span>
+    
+    <span class="cp">def</span> <span class="cf">__init__</span>(<span class="ci">self</span>):
+        <span class="cm"># Historial: lista que guarda todos los números verificados</span>
+        <span class="ci">self</span>.historial = []
+    
+    <span class="cp">def</span> <span class="cf">es_primo</span>(<span class="ci">self</span>, numero):
+        <span class="cs">"""Retorna True si numero es primo, False en caso contrario."""</span>
+        <span class="cm"># Agregar a historial</span>
+        <span class="ci">self</span>.historial.<span class="cf">append</span>(numero)
+        
+        <span class="cm"># Casos especiales</span>
+        <span class="cp">if</span> numero < <span class="cn">2</span>:
+            <span class="cp">return</span> <span class=\"ck\">False</span>
+        
+        <span class="cm"># Comprobar divisores desde 2 hasta sqrt(numero)</span>
+        <span class="cp">for</span> divisor <span class="cp">in</span> <span class=\"cf\">range</span>(<span class=\"cn\">2</span>, <span class=\"cf\">int</span>(numero ** <span class=\"cn\">0.5</span>) + <span class=\"cn\">1</span>):
+            <span class="cp">if</span> numero % divisor == <span class=\"cn\">0</span>:
+                <span class="cp">return</span> <span class=\"ck\">False</span>
+        
+        <span class="cp">return</span> <span class=\"ck\">True</span>
+    
+    <span class="cp">def</span> <span class=\"cf\">primos_en_rango</span>(<span class=\"ci\">self</span>, *args):
+        <span class=\"cs\">\"\"\"Retorna una lista con los números primos de los pasados en *args.\"\"\"</span>
+        primos = []
+        <span class=\"cp\">for</span> numero <span class=\"cp\">in</span> args:
+            <span class=\"cp\">if</span> <span class=\"ci\">self</span>.<span class=\"cf\">es_primo</span>(numero):
+                primos.<span class=\"cf\">append</span>(numero)
+        <span class=\"cp\">return</span> primos
+    
+    <span class=\"cp\">def</span> <span class=\"cf\">cantidad_verificados</span>(<span class=\"ci\">self</span>):
+        <span class=\"cs\">\"\"\"Retorna cuántos números se han verificado.\"\"\"</span>
+        <span class=\"cp\">return</span> <span class=\"cf\">len</span>(<span class=\"ci\">self</span>.historial)
+    
+    <span class=\"cp\">def</span> <span class=\"cf\">limpiar_historial</span>(<span class=\"ci\">self</span>):
+        <span class=\"cs\">\"\"\"Borra el historial.\"\"\"</span>
+        <span class=\"ci\">self</span>.historial = []
+
+
+<span class=\"cm\"># --- Programa principal ---</span>
+np = <span class=\"ct\">NumeroPrimo</span>()
+
+<span class=\"cm\"># Probar un número individual</span>
+resultado = np.<span class=\"cf\">es_primo</span>(<span class=\"cn\">7</span>)
+<span class=\"cf\">print</span>(f<span class=\"cs\">\"¿7 es primo? {resultado}\"</span>)
+
+<span class=\"cm\"># Probar varios números a la vez</span>
+primos = np.<span class=\"cf\">primos_en_rango</span>(<span class=\"cn\">10</span>, <span class=\"cn\">11</span>, <span class=\"cn\">12</span>, <span class=\"cn\">13</span>, <span class=\"cn\">14</span>, <span class=\"cn\">15</span>)
+<span class=\"cf\">print</span>(f<span class=\"cs\">\"Primos en el rango [10-15]: {primos}\"</span>)
+
+<span class=\"cm\"># Ver historial y cantidad</span>
+<span class=\"cf\">print</span>(f<span class=\"cs\">\"Historial: {np.historial}\"</span>)
+<span class=\"cf\">print</span>(f<span class=\"cs\">\"Total verificados: {np.cantidad_verificados()}\"</span>)</pre></div>
+          <div class="lineas"><div class="lin-lbl">🔍 Línea por línea (fragmentos clave)</div>
+            <div class="lin"><span class="lin-k">def __init__(self):</span><span class="lin-v">Constructor: inicializa el historial como una <strong>lista vacía</strong>.</span></div>
+            <div class="lin"><span class="lin-k">self.historial.append(numero)</span><span class="lin-v">Método de lista: <code>append</code> agrega el número al final del historial cada vez que se verifica.</span></div>
+            <div class="lin"><span class="lin-k">for divisor in range(2, int(numero ** 0.5) + 1):</span><span class="lin-v">Bucle de control de flujo: prueba divisores hasta la raíz cuadrada (optimización para primos).</span></div>
+            <div class="lin"><span class="lin-k">if self.es_primo(numero):</span><span class="lin-v">Reutilización: llama al método <code>es_primo</code> dentro del mismo método <code>primos_en_rango</code>.</span></div>
+            <div class="lin"><span class="lin-k">def primos_en_rango(self, *args):</span><span class="lin-v">*args: parámetro especial que captura múltiples argumentos posicionales como una tupla.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="paso">
+        <div class="paso-head"><span class="paso-num">5</span><span class="paso-tit">Prueba de escritorio (trace execution)</span></div>
+        <div class="paso-body">
+          <p class="paso-guia">Simulo línea por línea la ejecución con datos concretos.</p>
+          <div class="mesa-wrap"><table class="mesa">
+            <tr><th>Acción</th><th>Historial</th><th>Salida</th></tr>
+            <tr><td>np = NumeroPrimo()</td><td>[]</td><td>—</td></tr>
+            <tr><td>es_primo(7)</td><td>[7]</td><td>True</td></tr>
+            <tr><td>primos_en_rango(10,11,12,13)</td><td>[7,10,11,12,13]</td><td>[11,13]</td></tr>
+            <tr><td>cantidad_verificados()</td><td>[7,10,11,12,13]</td><td>5</td></tr>
+          </table></div>
+        </div>
+      </div>
+
+      <div class="errores"><div class="err-lbl">⚠️ Errores que cometen casi todos</div>
+        <ul>
+          <li>No inicializar <code>self.historial = []</code> en <code>__init__</code>. Sin esto, el atributo no existe cuando llamas al método.</li>
+          <li>No reutilizar el método <code>es_primo</code> en <code>primos_en_rango</code>. Si escribes el código de validación dos veces, después es difícil de mantener.</li>
+          <li>Olvidar agregar <code>append</code> al historial. El método funciona pero el historial nunca crece.</li>
+          <li>Confundir <code>*args</code> con una lista. <code>*args</code> es una tupla; si necesitas una lista, crea una dentro del método.</li>
+          <li>Poner `*args` en el constructor. Los argumentos variables se usan mejor en métodos, no en `__init__`.</li>
+        </ul>
+      </div>
+
+      <div class="reto-box"><div class="reto-lbl">🚀 Ampliación</div>
+        <p>Agrega un método <code>primos_hasta(n)</code> que retorne una lista de todos los primos hasta N. Reutiliza <code>es_primo</code> con un bucle <code>for</code>. Luego, crea otro método <code>cantidad_por_rango(inicio, fin)</code> que cuente cuántos primos hay en ese rango.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="aviso-alumno">
+    <strong>👉 Ahora con los siguientes 20 ejercicios:</strong> Aplica exactamente esta estructura. Antes de programar:
+    <ol style="margin-top:.5rem; margin-left:1.5rem; line-height:1.8;">
+      <li>Entiende en E·P·S qué hace la clase.</li>
+      <li>Bosqueja con números concretos.</li>
+      <li>Identifica dónde se reutilizan métodos y qué colecciones se usan.</li>
+      <li>Escribe la clase con constructor y métodos.</li>
+      <li>Verifica con una tabla pequeña.</li>
+    </ol>
+  </div>
+
+  <!-- ==================== EJERCICIOS PROPUESTOS ==================== -->
+  <div class="divider-secc"><span>📝 20 Ejercicios Propuestos</span></div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 1</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Validador de notas con promedio</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>Calificador</code> que: (1) tenga método <code>validar_nota(nota)</code> que retorne <code>True</code> si 0 ≤ nota ≤ 100, False en caso contrario; (2) tenga método <code>cargar_notas(*args)</code> que reciba múltiples notas, las valide, agregue solo las válidas a una <strong>lista</strong> interna, y retorne esa lista; (3) tenga método <code>promedio()</code> que retorne el promedio de notas almacenadas.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">notas individuales o en lotes (*args)</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">validar cada nota (0-100), guardar en lista, calcular promedio</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">True/False, lista de válidas, promedio</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">c = Calificador()<br>c.cargar_notas(85, 92, 110, 78, -5, 88)<br>c.promedio()</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">[85, 92, 78, 88]<br>85.75</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> lista interna de notas válidas</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 2</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Contador de palabras únicas</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>AnalizadorTexto</code> que: (1) tenga método <code>agregar_palabra(palabra)</code> que agregue la palabra a un <strong>conjunto</strong> (para evitar duplicados) y a una <strong>lista</strong> (para el orden); (2) tenga método <code>contar_palabras()</code> que retorne cuántas palabras únicas hay; (3) tenga método <code>agregar_multiples(*args)</code> que reutilice <code>agregar_palabra</code> para varios.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">palabras individuales o en lotes</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">guardar en conjunto y lista, contar únicas</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">cantidad de palabras únicas</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">at = AnalizadorTexto()<br>at.agregar_multiples("hola","mundo","hola")<br>at.contar_palabras()</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">2</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> conjunto (para unicidad) + lista (para orden)</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 3</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Gestor de compras con totales</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>CarroCompras</code> que: (1) tenga método <code>agregar_articulo(nombre, precio)</code> que guarde en un <strong>diccionario</strong> {nombre: precio}; (2) tenga método <code>total_carrito()</code> que retorne la suma de todos los precios; (3) tenga método <code>articulos_por_rango(precio_min, precio_max)</code> que retorne una lista con artículos dentro del rango.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">nombres de artículos y precios</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">guardar en diccionario, sumar valores, filtrar por rango</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">total, artículos en rango</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">c = CarroCompras()<br>c.agregar_articulo("pan",2.50)<br>c.agregar_articulo("leche",3.00)<br>c.total_carrito()</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">5.50</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario para almacenar nombre→precio</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 4</span>
+      <span class="prop-badge badge-medio">Medio</span>
+      <span class="prop-titulo">Inversor de secuencias</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>InversorSecuencia</code> que: (1) tenga método <code>invertir_lista(lista)</code> que retorne la lista invertida sin usar <code>reversed()</code> (usa manual con bucles); (2) tenga método <code>invertir_multiples(*listas)</code> que reutilice el anterior para invertir varias listas y retorne un diccionario {lista_original: lista_invertida}.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">lista o varias listas</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">invertir manualmente, guardar en diccionario</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">lista invertida o diccionario</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">inv = InversorSecuencia()<br>inv.invertir_lista([1,2,3])</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">[3, 2, 1]</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> listas y diccionarios con tuplas como claves</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 5</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Detector de números pares e impares</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>AnalizadorNumeros</code> que: (1) tenga método <code>es_par(numero)</code> que retorne True/False; (2) tenga método <code>separar(*numeros)</code> que retorne un diccionario {'pares': [...], 'impares': [...]} reutilizando <code>es_par</code>; (3) tenga método <code>cantidad_pares_impares()</code> que retorne una tupla (cant_pares, cant_impares).</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-lbl">números en lote</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">clasificar pares e impares con operador %</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">diccionario y tupla con cantidades</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">an = AnalizadorNumeros()<br>an.separar(1,2,3,4,5)</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">{'pares':[2,4], 'impares':[1,3,5]}</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario con claves string y valores list</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 6</span>
+      <span class="prop-badge badge-medio">Medio</span>
+      <span class="prop-titulo">Estadísticas de temperatura</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>GestorTemperatura</code> que: (1) tenga método <code>registrar_temperatura(temp)</code> que guarde en una <strong>lista</strong>; (2) tenga método <code>minima()`, `maxima()`, `promedio()</code> que calculen estadísticas; (3) tenga método <code>registrar_multiples(*temps)</code> que reutilice el registro para varias temperaturas.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">temperaturas individuales o en lote</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">guardar, calcular mín, máx, promedio</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">valores estadísticos</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">gt = GestorTemperatura()<br>gt.registrar_multiples(20,25,18,30)<br>gt.promedio()</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">23.25</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> lista de números + funciones built-in min/max</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 7</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Mapeador de edades</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>GestorPersonas</code> que: (1) tenga método <code>agregar_persona(nombre, edad)</code> que guarde en un <strong>diccionario</strong>; (2) tenga método <code>personas_mayores(edad_minima)</code> que retorne una lista de nombres cuya edad sea ≥; (3) tenga método <code>edad_promedio()</code> que retorne el promedio de edades.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">nombres y edades</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">guardar en diccionario, filtrar, promediar</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">lista filtrada, promedio</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">gp = GestorPersonas()<br>gp.agregar_persona("Ana",28)<br>gp.agregar_persona("Bob",17)<br>gp.personas_mayores(18)</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">["Ana"]</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario nombre→edad, iteración con items()</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 8</span>
+      <span class="prop-badge badge-medio">Medio</span>
+      <span class="prop-titulo">Asignador de equipos</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>Equipos</code> que: (1) tenga método <code>crear_equipo(nombre_equipo)</code> que inicie un equipo como una lista vacía en un <strong>diccionario</strong>; (2) tenga método <code>agregar_jugador(equipo, jugador)</code> que añada el jugador al equipo; (3) tenga método <code>equipo_mayor_integrantes()</code> que retorne el nombre del equipo con más jugadores.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">nombres de equipos y jugadores</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">crear estructura equipo→[jugadores], contar, comparar</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">equipo con mayor cantidad</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">eq = Equipos()<br>eq.crear_equipo("A")<br>eq.agregar_jugador("A","Juan")<br>eq.agregar_jugador("A","Pedro")</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">—</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario de listas (estructura anidada)</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 9</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Validador de caracteres</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>AnalizadorString</code> que: (1) tenga método <code>solo_vocales(letra)</code> que retorne True si es vocal; (2) tenga método <code>contar_por_tipo(texto)</code> que retorne un diccionario {'vocales': cant, 'consonantes': cant, 'digitos': cant} reutilizando métodos; (3) tenga atributo que guarde el texto más largo analizado.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">textos para analizar</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">recorrer carácter a carácter, clasificar</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">diccionario con conteos</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">astr = AnalizadorString()<br>astr.contar_por_tipo("Hola123")</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">{'vocales':2, 'consonantes':2, 'digitos':3}</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario para contar tipos</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 10</span>
+      <span class="prop-badge badge-medio">Medio</span>
+      <span class="prop-titulo">Gestor de tareas con prioridad</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>Tareas</code> que: (1) tenga método <code>agregar_tarea(descripcion, prioridad)</code> que guarde en una <strong>lista de tuplas</strong> (descripción, prioridad); (2) tenga método <code>tareas_prioritarias()</code> que retorne solo las de prioridad alta; (3) tenga método <code>eliminar_completada(descripcion)</code> que borre la tarea de la lista.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">descripciones y prioridades</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">guardar tuplas, filtrar por prioridad, eliminar</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">tareas filtradas</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">t = Tareas()<br>t.agregar_tarea("Estudiar", "alta")<br>t.agregar_tarea("Leer", "baja")<br>t.tareas_prioritarias()</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">[("Estudiar", "alta")]</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> lista de tuplas (inmutables, ordenadas)</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 11</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Contador de frecuencia</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>ContadorFrecuencia</code> que: (1) tenga método <code>agregar_elemento(elemento)</code> que guarde en un <strong>diccionario</strong> contando repeticiones; (2) tenga método <code>elemento_mas_frecuente()</code> que retorne el elemento con mayor frecuencia; (3) tenga método <code>frecuencia_elemento(elemento)</code> que retorne cuántas veces aparece.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">elementos individuales o en lote</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">guardar en diccionario, contar, encontrar máximo</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">elemento más frecuente y su conteo</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">cf = ContadorFrecuencia()<br>cf.agregar_elemento("a")<br>cf.agregar_elemento("b")<br>cf.agregar_elemento("a")<br>cf.elemento_mas_frecuente()</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">"a"</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario como contador (patrón común)</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 12</span>
+      <span class="prop-badge badge-medio">Medio</span>
+      <span class="prop-titulo">Selector de rango con tuplas</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>SelectorRango</code> que: (1) tenga método <code>crear_rango(inicio, fin)</code> que retorne una tupla con números en ese rango; (2) tenga método <code>elementos_en_multiples_rangos(*rangos)</code> que reciba múltiples tuplas (inicio,fin) y retorne una lista combinada sin duplicados usando un <strong>conjunto</strong>.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">pares (inicio, fin) para varios rangos</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">crear rangos como tuplas, unir sin duplicados</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">lista de elementos únicos</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">sr = SelectorRango()<br>sr.elementos_en_multiples_rangos((1,3), (2,4))</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">[1, 2, 3, 4]</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> tuplas como parámetros + conjuntos para eliminar duplicados</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 13</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Combinador de listas</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>CombinadorListas</code> que: (1) tenga método <code>intercalar(lista1, lista2)</code> que retorne una lista alternando elementos de ambas; (2) tenga método <code>intercalar_multiples(*listas)</code> que reutilice para varias listas.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">dos o más listas</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">alternar elementos con índices, bucles</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">lista intercalada</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">cl = CombinadorListas()<br>cl.intercalar([1,2], [3,4])</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">[1, 3, 2, 4]</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> indexación de listas con loops y condicionales</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 14</span>
+      <span class="prop-badge badge-medio">Medio</span>
+      <span class="prop-titulo">Mapeo de estudiantes a notas</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>RegistroNotas</code> que: (1) tenga método <code>registrar(estudiante, nota)</code> que guarde en un <strong>diccionario</strong>; (2) tenga método <code>estudiantes_aprobados(nota_minima)</code> que retorne lista de estudiantes; (3) tenga método <code>mejor_estudiante()</code> que retorne nombre y nota del que tiene mayor calificación.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">estudiante → nota</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">guardar diccionario, iterar con items(), comparar</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">listas filtradas, tupla (nombre, nota)</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">rn = RegistroNotas()<br>rn.registrar("Ana", 95)<br>rn.registrar("Bob", 70)<br>rn.mejor_estudiante()</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">("Ana", 95)</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario.items() para iterar clave-valor</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 15</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Divisores de un número</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>DivisorFinder</code> que: (1) tenga método <code>encontrar_divisores(numero)</code> que retorne una <strong>tupla</strong> con todos los divisores; (2) tenga método <code>es_perfecto(numero)</code> que retorne True si la suma de sus divisores (excepto él mismo) es igual a él; (3) tenga método <code>encontrar_multiples_divisores(*numeros)</code> que retorne un <strong>diccionario</strong> {número: tupla_divisores}.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">uno o varios números</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">encontrar divisores con bucles, verificar suma</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">tuplas, booleano, diccionario</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">df = DivisorFinder()<br>df.encontrar_divisores(12)</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">(1, 2, 3, 4, 6, 12)</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> tuplas (inmutables), diccionario como almacén</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 16</span>
+      <span class="prop-badge badge-medio">Medio</span>
+      <span class="prop-titulo">Codificador/Decodificador</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>CodificadorCesar</code> que: (1) tenga método <code>codificar_letra(letra, desplazamiento)</code> que retorne la letra desplazada en el alfabeto (usar operador %); (2) tenga método <code>codificar_palabra(palabra, desplazamiento)</code> que reutilice para toda la palabra; (3) tenga un <strong>diccionario</strong> como atributo para historial de codificaciones.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">letra/palabra y desplazamiento (1-25)</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">convertir a código ASCII, desplazar con %, guardar historial</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">palabra codificada</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">cc = CodificadorCesar()<br>cc.codificar_palabra("hola", 3)</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">"kroc" (aprox, solo ejemplo)</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario para historial; ord() y chr() para conversión</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 17</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Grupo de edades</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>AgrupadorEdades</code> que: (1) tenga método <code>clasificar_edad(edad)</code> que retorne la categoría ("niño", "adolescente", "adulto", "mayor"); (2) tenga método <code>agrupar_por_categoria(*edades)</code> que retorne un <strong>diccionario</strong> con {categoría: [edades]}; (3) tenga método <code>edad_promedio_categoria(categoria)</code>.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">edades en lote</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">clasificar con if/elif, agrupar en diccionario</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">diccionario agrupado, promedio</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">ae = AgrupadorEdades()<br>ae.agrupar_por_categoria(5, 15, 30, 70)</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">{'niño':[5], 'adolescente':[15], 'adulto':[30], 'mayor':[70]}</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario de listas (estructura anidada)</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 18</span>
+      <span class="prop-badge badge-medio">Medio</span>
+      <span class="prop-titulo">Matriz de distancias</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>CalculadorDistancia</code> que: (1) tenga método <code>distancia_euclidiana(p1, p2)</code> que reciba dos tuplas (x,y) y calcule la distancia; (2) tenga método <code>punto_mas_cercano(referencia, *puntos)</code> que retorne el punto más cercano a referencia; (3) tenga un atributo lista para guardar todas las distancias calculadas.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">tuplas (x, y) como puntos</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">calcular distancia con fórmula, comparar, guardar</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">distancia numérica, punto más cercano</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">cd = CalculadorDistancia()<br>cd.distancia_euclidiana((0,0), (3,4))</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">5.0</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> tuplas como puntos 2D; lista para guardar resultados</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 19</span>
+      <span class="prop-badge badge-basico">Básico</span>
+      <span class="prop-titulo">Inventario de productos</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>Inventario</code> que: (1) tenga método <code>agregar_stock(producto, cantidad)</code> que guarde en un <strong>diccionario</strong>; (2) tenga método <code>restar_stock(producto, cantidad)</code> que disminuya y retorne True si hay suficiente; (3) tenga método <code>productos_bajo_stock(minimo)</code> que retorne una lista de productos con cantidad < minimo.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">productos y cantidades</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">guardar/actualizar diccionario, validar, filtrar</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">True/False, lista de productos</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">inv = Inventario()<br>inv.agregar_stock("pan", 50)<br>inv.restar_stock("pan", 30)<br>inv.productos_bajo_stock(15)</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">True<br>["pan"]</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> diccionario como base de datos simple</div>
+    </div>
+  </div>
+
+  <div class="ejercicio-propuesto">
+    <div class="prop-head">
+      <span class="prop-num">Ej. 20</span>
+      <span class="prop-badge badge-avanzado">Avanzado</span>
+      <span class="prop-titulo">Analizador de patrones en textos</span>
+    </div>
+    <div class="prop-body">
+      <div class="prop-enunciado">Clase <code>AnalizadorPatrones</code> que: (1) tenga método <code>encontrar_palabras(texto, patron)</code> que busque palabras que inicien con el patrón y retorne una <strong>lista</strong>; (2) tenga método <code>agrupar_por_longitud(texto)</code> que retorne un <strong>diccionario</strong> {longitud: [palabras]}; (3) tenga método <code>palabras_unicas()</code> usando un <strong>conjunto</strong>.</div>
+      <div class="eps eps-mini">
+        <div class="eps-box eps-e"><div class="eps-lbl">Entrada</div><div class="eps-val">texto y patrón de búsqueda</div></div>
+        <div class="eps-box eps-p"><div class="eps-lbl">Proceso</div><div class="eps-val">split(), filtrar, agrupar por longitud, eliminar duplicados</div></div>
+        <div class="eps-box eps-s"><div class="eps-lbl">Salida</div><div class="eps-val">listas, diccionario, conjunto</div></div>
+      </div>
+      <div class="io-example">
+        <div class="io-box"><div class="io-label">Ejemplo de entrada</div><div class="io-val">ap = AnalizadorPatrones()<br>ap.agrupar_por_longitud("el gato está aquí")</div></div>
+        <div class="io-box"><div class="io-label">Salida esperada</div><div class="io-val">{2:['el'], 4:['gato'], 5:['está'], 5:['aquí']}</div></div>
+      </div>
+      <div class="tip"><strong>💡 Colecciones:</strong> todas (lista, diccionario, conjunto) + métodos de string (split, startswith)</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="footer">
+  <div class="wrap">
+    <p>Guía de 20 ejercicios prácticos — Clases y Colecciones | Python | Unidad 1-2 sin Herencia</p>
+    <p style="margin-top:.5rem; font-size:13px;">Cada ejercicio combina constructor, métodos reutilizables, y colecciones (listas, tuplas, diccionarios, conjuntos).</p>
+  </div>
+</div>
+
+<script>
+function copyCode(btn) {
+  const code = btn.nextElementSibling.textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.classList.add('copied');
+    btn.textContent = '✓ Copiado';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = 'Copiar';
+    }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
